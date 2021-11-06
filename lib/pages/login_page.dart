@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:oktoast/oktoast.dart';
 import 'package:scheduler_frontend/services/admin_service.dart';
 import 'package:oktoast/oktoast.dart' as OKToast;
 
