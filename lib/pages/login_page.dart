@@ -87,10 +87,10 @@ class LoginPage extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(10)),
                               onPressed: () async {
                                 if (await as.login(
-                                    userController.text, passController.text))
+                                    userController.text, passController.text)) {
                                   Navigator.pushReplacementNamed(
                                       context, 'adminPage');
-                                else {
+                                } else {
                                   OKToast.showToast(
                                       "Datos incorrectos aha pebdehki");
                                 }

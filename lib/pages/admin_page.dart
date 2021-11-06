@@ -13,10 +13,10 @@ class AdminPage extends StatelessWidget {
       crossAxisCount: 2,
       childAspectRatio: 2,
       children: [
-        customButton(context, "Enfermeros", "nursesPage", Color(0xffADC4FF)),
-        customButton(context, "Peticiones", "ptosPage", Color(0xffADC4FF)),
-        customButton(context, "Usuarios", "users", Color(0xffADC4FF)),
-        customButton(context, "Salir", "login", Color(0xffE2C8F9),
+        customButton(context, "Enfermeros", "nursesPage", Colors.grey[300]!),
+        customButton(context, "Peticiones", "ptosPage", Colors.grey[300]!),
+        customButton(context, "Usuarios", "users", Colors.grey[300]!),
+        customButton(context, "Salir", "login", Color(0xff0A66BF),
             replace: true),
       ],
     ));
@@ -28,14 +28,15 @@ class AdminPage extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.all(20),
       child: MaterialButton(
+        splashColor: Colors.blue,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         height: 50,
         onPressed: () => !replace
             ? Navigator.pushNamed(context, path)
             : Navigator.pushReplacementNamed(context, path),
         child: Text(text,
-            style: const TextStyle(
-                color: Colors.white,
+            style: TextStyle(
+                color: replace ? Colors.white : Colors.black,
                 fontSize: 30,
                 fontWeight: FontWeight.w300)),
         color: color,
