@@ -6,11 +6,20 @@ part 'nurse.g.dart';
 class Nurse {
   @JsonKey(name: "_id")
   String? id;
-  String? nurseId;
+  @JsonKey(name: "nurse_id")
+  int? nurseId;
   String? name;
+
+  @JsonKey(name: "days_off_available")
   int? daysOffAvailable;
+
+  @JsonKey(name: "work_schedule")
   TimeFrame? workSchedule;
+
+  @JsonKey(name: "work_hours")
   TimeFrame? workHours;
+
+  @JsonKey(name: "break_hours")
   TimeFrame? breakHours;
 
   Nurse({
