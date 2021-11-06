@@ -19,8 +19,6 @@ class NurseService {
     final resp =
         await http.get(url, headers: {'Content-Type': 'application/json'});
 
-    print(resp.body);
-
     final nurses = nursesResponseFromJson(resp.body);
 
     return nurses.data ?? List.empty();

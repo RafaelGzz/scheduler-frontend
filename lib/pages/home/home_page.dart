@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:scheduler_frontend/models/nurse/nurse.dart';
 import 'package:scheduler_frontend/pages/home/widgets/header.dart';
 
 class HomePage extends StatefulWidget {
@@ -9,13 +10,20 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  Nurse? selectedNurse;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blueGrey,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.pushReplacementNamed(context, 'login');
+        },
+        child: const Icon(Icons.admin_panel_settings),
+      ),
       body: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
-          if (constraints.maxWidth > 900) {
+          if (constraints.maxWidth > 768) {
             return _horizontalView(constraints);
           } else {
             return _verticalView(constraints);
@@ -40,15 +48,15 @@ class _HomePageState extends State<HomePage> {
           onTap: () {
             FocusScope.of(context).requestFocus(FocusNode());
           },
-          child: Container(
-            color: Colors.brown,
+          child: SizedBox(
             height: constraints.maxHeight,
             // padding: const EdgeInsets.only(top: ),
             child: Row(
               children: [
-                Expanded(
-                  child: Column(),
-                ),
+                if (selectedNurse != null)
+                  Expanded(
+                    child: Center(child: Text(selectedNurse!.name!)),
+                  ),
                 Expanded(
                   child: Column(),
                 ),
@@ -58,6 +66,11 @@ class _HomePageState extends State<HomePage> {
         ),
         Header(
           width: headerViewWidth,
+          onNurseSelected: (Nurse nurse) {
+            setState(() {
+              selectedNurse = nurse;
+            });
+          },
         )
       ],
     );

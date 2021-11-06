@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:scheduler_frontend/models/nurse/nurse.dart';
 import 'package:scheduler_frontend/pages/home/widgets/header_content.dart';
 
 class Header extends StatefulWidget {
-  const Header({Key? key, required this.width}) : super(key: key);
+  const Header({
+    Key? key,
+    required this.width,
+    this.onNurseSelected,
+  }) : super(key: key);
+
   final double width;
+  final Function(Nurse)? onNurseSelected;
 
   @override
   _HeaderState createState() => _HeaderState();
@@ -12,12 +19,14 @@ class Header extends StatefulWidget {
 class _HeaderState extends State<Header> {
   bool isActive = false;
 
+  TextEditingController keyController = TextEditingController(text: '');
+
   @override
   Widget build(BuildContext context) {
     return AnimatedPositioned(
       left: 0,
       right: 0,
-      top: isActive ? 0 : -320,
+      top: isActive ? -30 : -320,
       duration: const Duration(milliseconds: 300),
       child: Center(
         child: Container(
@@ -55,19 +64,32 @@ class _HeaderState extends State<Header> {
                       color: Color(0xff0A66BF),
                       fontWeight: FontWeight.w300),
                 ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
                   child: TextField(
-                    style: TextStyle(fontSize: 26),
-                    textAlign: TextAlign.center,
-                    autocorrect: false,
-                    decoration: InputDecoration(
-                      contentPadding: EdgeInsets.symmetric(horizontal: 20),
-                      hintText: "Clave de enfermera",
-                    ),
-                  ),
+                      controller: keyController,
+                      style: const TextStyle(fontSize: 26),
+                      textAlign: TextAlign.center,
+                      autocorrect: false,
+                      decoration: const InputDecoration(
+                        contentPadding: EdgeInsets.symmetric(horizontal: 20),
+                        hintText: "Clave de enfermera",
+                      ),
+                      onChanged: (_) {
+                        setState(() {});
+                      }),
                 ),
-                if (isActive) const HeaderContent()
+                if (isActive)
+                  HeaderContent(
+                    searchKey: keyController.text,
+                    onKeyChanged: (String nurseId) {
+                      setState(() {
+                        keyController.text = nurseId;
+                      });
+                    },
+                    onNurseSelected: widget.onNurseSelected,
+                  )
               ],
             ),
           ),
