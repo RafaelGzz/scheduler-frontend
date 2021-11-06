@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:oktoast/oktoast.dart';
+import 'package:scheduler_frontend/services/admin_service.dart';
+import 'package:oktoast/oktoast.dart' as OKToast;
 
 class LoginPage extends StatelessWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -6,6 +9,11 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+
+    AdminService as = AdminService();
+
+    TextEditingController userController = TextEditingController();
+    TextEditingController passController = TextEditingController();
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -38,9 +46,10 @@ class LoginPage extends StatelessWidget {
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10),
                                 color: Colors.grey[200]),
-                            child: const TextField(
+                            child: TextField(
                               autocorrect: false,
-                              decoration: InputDecoration(
+                              controller: userController,
+                              decoration: const InputDecoration(
                                 contentPadding:
                                     EdgeInsets.symmetric(horizontal: 20),
                                 hintText: "Usuario",
@@ -54,10 +63,11 @@ class LoginPage extends StatelessWidget {
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10),
                                 color: Colors.grey[200]),
-                            child: const TextField(
+                            child: TextField(
                               autocorrect: false,
                               obscureText: true,
-                              decoration: InputDecoration(
+                              controller: passController,
+                              decoration: const InputDecoration(
                                 contentPadding:
                                     EdgeInsets.symmetric(horizontal: 20),
                                 hintText: "Contraseña",
@@ -75,7 +85,16 @@ class LoginPage extends StatelessWidget {
                               padding: const EdgeInsets.symmetric(vertical: 15),
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10)),
-                              onPressed: login,
+                              onPressed: () async {
+                                if (await as.login(
+                                    userController.text, passController.text))
+                                  Navigator.pushReplacementNamed(
+                                      context, 'home');
+                                else {
+                                  OKToast.showToast(
+                                      "Datos incorrectos aha pebdehki");
+                                }
+                              },
                               color: const Color(0xff0A66BF),
                               child: const Text(
                                 "Ingresar",
@@ -95,6 +114,4 @@ class LoginPage extends StatelessWidget {
       ),
     );
   }
-
-  login() {}
 }
