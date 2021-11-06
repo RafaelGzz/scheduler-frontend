@@ -20,7 +20,8 @@ class AdminService {
       "password": password,
     };
 
-    final url = Uri.parse("http://10.0.2.2:5000/api/auth/login");
+    final url =
+        Uri.parse("https://schedulerr2-backend.herokuapp.com/api/auth/login");
 
     final resp = await http.post(url,
         body: jsonEncode(data), headers: {'Content-Type': 'application/json'});
