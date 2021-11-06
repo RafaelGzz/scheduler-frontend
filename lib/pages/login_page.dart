@@ -89,7 +89,7 @@ class LoginPage extends StatelessWidget {
                                 if (await as.login(
                                     userController.text, passController.text))
                                   Navigator.pushReplacementNamed(
-                                      context, 'home');
+                                      context, 'adminPage');
                                 else {
                                   OKToast.showToast(
                                       "Datos incorrectos aha pebdehki");
