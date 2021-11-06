@@ -1,5 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:scheduler_frontend/models/TimeFrame/time_frame.dart';
+import 'package:scheduler_frontend/models/time_frame/time_frame.dart';
 part 'nurse.g.dart';
 
 @JsonSerializable()

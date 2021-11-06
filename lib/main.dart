@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:scheduler_frontend/pages/admin_page.dart';
-import 'package:scheduler_frontend/pages/home_page.dart';
+import 'package:scheduler_frontend/pages/home/home_page.dart';
 import 'package:scheduler_frontend/pages/login_page.dart';
 import 'package:scheduler_frontend/pages/nurses_page.dart';
 import 'package:scheduler_frontend/pages/ptos_page.dart';
@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
       builder: (context, child) => OKToast(child: child!),
       debugShowCheckedModeBanner: false,
       title: 'Scheduler',
-      initialRoute: 'login',
+      initialRoute: 'home',
       routes: {
         'home': (BuildContext context) => const HomePage(),
         'login': (BuildContext context) => const LoginPage(),
