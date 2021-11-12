@@ -44,24 +44,19 @@ class _HomePageState extends State<HomePage> {
 
     return Stack(
       children: [
-        GestureDetector(
-          onTap: () {
-            FocusScope.of(context).requestFocus(FocusNode());
-          },
-          child: SizedBox(
-            height: constraints.maxHeight,
-            // padding: const EdgeInsets.only(top: ),
-            child: Row(
-              children: [
-                if (selectedNurse != null)
-                  Expanded(
-                    child: Center(child: Text(selectedNurse!.name!)),
-                  ),
+        SizedBox(
+          height: constraints.maxHeight,
+          // padding: const EdgeInsets.only(top: ),
+          child: Row(
+            children: [
+              if (selectedNurse != null)
                 Expanded(
-                  child: Column(),
+                  child: Center(child: Text(selectedNurse!.name!)),
                 ),
-              ],
-            ),
+              Expanded(
+                child: Column(),
+              ),
+            ],
           ),
         ),
         Header(
