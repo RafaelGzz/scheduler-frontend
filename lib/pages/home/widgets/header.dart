@@ -28,31 +28,26 @@ class _HeaderState extends State<Header> {
       right: 0,
       top: isActive ? -30 : -320,
       duration: const Duration(milliseconds: 300),
-      child: Center(
-        child: Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(20),
-              bottomRight: Radius.circular(20),
+      child: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: () {
+          setState(() {
+            isActive = true;
+          });
+        },
+        child: Center(
+          child: Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(20),
+                bottomRight: Radius.circular(20),
+              ),
             ),
-          ),
-          padding: const EdgeInsets.all(30),
-          margin: const EdgeInsets.all(30),
-          width: widget.width,
-          height: 500,
-          child: Focus(
-            onFocusChange: (hasFocus) {
-              if (!hasFocus) {
-                setState(() {
-                  isActive = false;
-                });
-              } else {
-                setState(() {
-                  isActive = true;
-                });
-              }
-            },
+            padding: const EdgeInsets.all(30),
+            margin: const EdgeInsets.all(30),
+            width: widget.width,
+            height: 500,
             child: Column(
               mainAxisAlignment:
                   !isActive ? MainAxisAlignment.end : MainAxisAlignment.start,
@@ -67,29 +62,42 @@ class _HeaderState extends State<Header> {
                 Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-                  child: TextField(
-                      controller: keyController,
-                      style: const TextStyle(fontSize: 26),
-                      textAlign: TextAlign.center,
-                      autocorrect: false,
-                      decoration: const InputDecoration(
-                        contentPadding: EdgeInsets.symmetric(horizontal: 20),
-                        hintText: "Clave de enfermera",
-                      ),
-                      onChanged: (_) {
-                        setState(() {});
-                      }),
+                  child: Focus(
+                    onFocusChange: (hasFocus) {
+                      if(hasFocus) {
+                        setState(() {
+                          isActive = true;
+                        });
+                      }
+                    },
+                    child: TextField(
+                        controller: keyController,
+                        style: const TextStyle(fontSize: 26),
+                        textAlign: TextAlign.center,
+                        autocorrect: false,
+                        decoration: const InputDecoration(
+                          contentPadding: EdgeInsets.symmetric(horizontal: 20),
+                          hintText: "Clave de enfermera",
+                        ),
+                        onChanged: (_) {
+                          setState(() {});
+                        }),
+                  ),
                 ),
                 if (isActive)
                   HeaderContent(
-                    searchKey: keyController.text,
-                    onKeyChanged: (String nurseId) {
-                      setState(() {
-                        keyController.text = nurseId;
-                      });
-                    },
-                    onNurseSelected: widget.onNurseSelected,
-                  )
+                      searchKey: keyController.text,
+                      onKeyChanged: (String nurseId) {
+                        setState(() {
+                          keyController.text = nurseId;
+                        });
+                      },
+                      onNurseSelected: (Nurse nurse) {
+                        setState(() {
+                          isActive = false;
+                        });
+                        widget.onNurseSelected?.call(nurse);
+                      })
               ],
             ),
           ),
