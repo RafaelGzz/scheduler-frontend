@@ -15,8 +15,8 @@ class AdminPage extends StatelessWidget {
       children: [
         customButton(context, "Enfermeros", "nursesPage", Colors.grey[300]!),
         customButton(context, "Peticiones", "ptosPage", Colors.grey[300]!),
-        customButton(context, "Usuarios", "users", Colors.grey[300]!),
-        customButton(context, "Salir", "login", Color(0xff0A66BF),
+        customButton(context, "Usuarios", "usersPage", Colors.grey[300]!),
+        customButton(context, "Salir", "home", const Color(0xff0A66BF),
             replace: true),
       ],
     ));
