@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:scheduler_frontend/models/nurse/nurse.dart';
+import 'package:scheduler_frontend/pages/home/widgets/custom_carousel.dart';
 import 'package:scheduler_frontend/pages/home/widgets/header.dart';
+import 'package:scheduler_frontend/pages/home/widgets/pill.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -11,6 +13,9 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   Nurse? selectedNurse;
+
+  int currentIndex = 0;
+  double pillPosition = 100;
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +38,17 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  void changeCard(int index) async {
+    setState(() {
+      currentIndex = index;
+      pillPosition = -10;
+    });
+    await Future.delayed(const Duration(milliseconds: 100));
+    setState(() {
+      pillPosition = 100;
+    });
+  }
+
   Widget _horizontalView(BoxConstraints constraints) {
     double partitionedWidth = constraints.maxWidth * .8;
     double headerViewWidth = partitionedWidth < 900 ? 900 : partitionedWidth;
@@ -42,32 +58,47 @@ class _HomePageState extends State<HomePage> {
     // double partitionedHeigth = constraints.maxHeight * .3;
     // // double headerViewHeigth = partitionedHeigth < 200 ? 200 : partitionedHeigth;
 
-    return Stack(
-      children: [
-        SizedBox(
-          height: constraints.maxHeight,
-          // padding: const EdgeInsets.only(top: ),
-          child: Row(
-            children: [
-              if (selectedNurse != null)
-                Expanded(
-                  child: Center(child: Text(selectedNurse!.name!)),
+    List<String> messages = [
+      "Hinchada de",
+      "Tigres",
+      "Cual es su profesion?",
+      "la U la U la U",
+      "Vamos Tigres",
+      "Te quiero ver",
+      "Campeoooon",
+      "Otra vez"
+    ];
+
+    return SizedBox(
+      height: constraints.maxHeight,
+      child: Stack(
+        children: [
+          if (selectedNurse != null)
+            Expanded(
+              child: Center(
+                child: Text(
+                  selectedNurse!.name!,
                 ),
-              Expanded(
-                child: Column(),
               ),
-            ],
-          ),
-        ),
-        Header(
-          width: headerViewWidth,
-          onNurseSelected: (Nurse nurse) {
-            setState(() {
-              selectedNurse = nurse;
-            });
-          },
-        )
-      ],
+            )
+          else ...[
+            CustomCarousel(onPageChanged: changeCard),
+            Pill(
+              messages: messages,
+              currentIndex: currentIndex,
+              pillPosition: pillPosition,
+            ),
+          ],
+          Header(
+            width: headerViewWidth,
+            onNurseSelected: (Nurse nurse) {
+              setState(() {
+                selectedNurse = nurse;
+              });
+            },
+          )
+        ],
+      ),
     );
   }
 
