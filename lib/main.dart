@@ -3,8 +3,9 @@ import 'package:oktoast/oktoast.dart';
 import 'package:scheduler_frontend/pages/admin_page.dart';
 import 'package:scheduler_frontend/pages/home/home_page.dart';
 import 'package:scheduler_frontend/pages/login_page.dart';
-import 'package:scheduler_frontend/pages/nurses_page.dart';
+import 'package:scheduler_frontend/pages/nurses_page/nurses_page.dart';
 import 'package:scheduler_frontend/pages/ptos_page.dart';
+import 'package:scheduler_frontend/pages/users_page.dart';
 
 void main() => runApp(const MyApp());
 
@@ -17,13 +18,14 @@ class MyApp extends StatelessWidget {
       builder: (context, child) => OKToast(child: child!),
       debugShowCheckedModeBanner: false,
       title: 'Scheduler',
-      initialRoute: 'home',
+      initialRoute: 'nursesPage',
       routes: {
         'home': (BuildContext context) => const HomePage(),
-        'login': (BuildContext context) => const LoginPage(),
+        'login': (BuildContext context) => LoginPage(),
         'adminPage': (BuildContext context) => const AdminPage(),
         'nursesPage': (BuildContext context) => NursesPage(),
-        'ptosPage': (BuildContext context) => const PtosPage()
+        'ptosPage': (BuildContext context) => const PtosPage(),
+        'usersPage': (BuildContext context) => const UsersPage()
       },
     );
   }
