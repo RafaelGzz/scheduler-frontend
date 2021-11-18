@@ -37,12 +37,19 @@ class _HeaderState extends State<Header> {
         },
         child: Center(
           child: Container(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.only(
+              borderRadius: const BorderRadius.only(
                 bottomLeft: Radius.circular(20),
                 bottomRight: Radius.circular(20),
               ),
+              boxShadow: [
+                BoxShadow(
+                  blurRadius: 80,
+                  spreadRadius: 1,
+                  color: Colors.black.withOpacity(.1),
+                )
+              ],
             ),
             padding: const EdgeInsets.all(30),
             margin: const EdgeInsets.all(30),
@@ -64,7 +71,7 @@ class _HeaderState extends State<Header> {
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
                   child: Focus(
                     onFocusChange: (hasFocus) {
-                      if(hasFocus) {
+                      if (hasFocus) {
                         setState(() {
                           isActive = true;
                         });
@@ -86,18 +93,19 @@ class _HeaderState extends State<Header> {
                 ),
                 if (isActive)
                   HeaderContent(
-                      searchKey: keyController.text,
-                      onKeyChanged: (String nurseId) {
-                        setState(() {
-                          keyController.text = nurseId;
-                        });
-                      },
-                      onNurseSelected: (Nurse nurse) {
-                        setState(() {
-                          isActive = false;
-                        });
-                        widget.onNurseSelected?.call(nurse);
-                      })
+                    searchKey: keyController.text,
+                    onKeyChanged: (String nurseId) {
+                      setState(() {
+                        keyController.text = nurseId;
+                      });
+                    },
+                    onNurseSelected: (Nurse nurse) {
+                      setState(() {
+                        isActive = false;
+                      });
+                      widget.onNurseSelected?.call(nurse);
+                    },
+                  )
               ],
             ),
           ),
