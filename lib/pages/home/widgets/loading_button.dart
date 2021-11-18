@@ -33,8 +33,6 @@ class LoadingButtonState extends State<LoadingButton>
       setState(() {});
       int value = ((controller?.value ?? 0) * 255).ceil();
       textColor = Color.fromRGBO(value, value, value, 1);
-      print(value);
-      print(textColor);
     });
   }
 
