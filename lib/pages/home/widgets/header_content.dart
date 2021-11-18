@@ -33,7 +33,6 @@ class _HeaderContentState extends State<HeaderContent> {
           onTap: () {
             setState(() {
               selectedNurse = nurse;
-              print(selectedNurse);
               widget.onKeyChanged?.call(selectedNurse!.nurseId!.toString());
             });
           },

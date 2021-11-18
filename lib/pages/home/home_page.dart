@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:scheduler_frontend/models/nurse/nurse.dart';
 import 'package:scheduler_frontend/pages/home/widgets/custom_carousel.dart';
 import 'package:scheduler_frontend/pages/home/widgets/header.dart';
+import 'package:scheduler_frontend/pages/home/widgets/loading_button.dart';
 import 'package:scheduler_frontend/pages/home/widgets/pill.dart';
 
 class HomePage extends StatefulWidget {
@@ -16,6 +17,7 @@ class _HomePageState extends State<HomePage> {
 
   int currentIndex = 0;
   double pillPosition = 100;
+  bool isCurrentCheckedIn = false;
 
   @override
   Widget build(BuildContext context) {
@@ -74,11 +76,111 @@ class _HomePageState extends State<HomePage> {
       child: Stack(
         children: [
           if (selectedNurse != null)
-            Expanded(
-              child: Center(
-                child: Text(
-                  selectedNurse!.name!,
-                ),
+            Padding(
+              padding: const EdgeInsets.all(50),
+              child: Column(
+                children: [
+                  Expanded(
+                    flex: 3,
+                    child: Container(
+                      margin: const EdgeInsets.only(top: 220),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            blurRadius: 80,
+                            spreadRadius: 1,
+                            color: Colors.black.withOpacity(.1),
+                          )
+                        ],
+                      ),
+                      child: AnimatedSwitcher(
+                        // transitionBuilder: (child, animation) => SizeTransition(
+                        //   sizeFactor: animation,
+                        //   child: child,
+                        // ),
+                        duration: const Duration(milliseconds: 200),
+                        child: !isCurrentCheckedIn
+                            ? LoadingButton(
+                                label: "Iniciar Turno",
+                                disabledColor: Colors.blue[300],
+                                onComplete: () {
+                                  setState(() {
+                                    isCurrentCheckedIn = true;
+                                  });
+                                },
+                              )
+                            : Row(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  LoadingButton(
+                                    label: "Terminar Turno",
+                                    activeColor: Colors.red[900],
+                                    disabledColor: Colors.red[300],
+                                    onComplete: () {
+                                      setState(() {
+                                        isCurrentCheckedIn = false;
+                                      });
+                                    },
+                                  ),
+                                  LoadingButton(
+                                    label: "Iniciar Descanso",
+                                    activeColor: Colors.purple[900],
+                                    disabledColor: Colors.purple[300],
+                                    onComplete: () {
+                                      setState(() {
+                                        isCurrentCheckedIn = false;
+                                      });
+                                    },
+                                  ),
+                                ],
+                              ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            margin: const EdgeInsets.only(top: 35, right: 35),
+                            decoration: BoxDecoration(
+                              color: Colors.blue,
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  blurRadius: 80,
+                                  spreadRadius: 1,
+                                  color: Colors.black.withOpacity(.1),
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Container(
+                            margin: const EdgeInsets.only(top: 35),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  blurRadius: 80,
+                                  spreadRadius: 1,
+                                  color: Colors.black.withOpacity(.1),
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             )
           else ...[

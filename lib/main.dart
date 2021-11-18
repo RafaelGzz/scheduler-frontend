@@ -21,9 +21,9 @@ class MyApp extends StatelessWidget {
       initialRoute: 'nursesPage',
       routes: {
         'home': (BuildContext context) => const HomePage(),
-        'login': (BuildContext context) => LoginPage(),
-        'adminPage': (BuildContext context) => const AdminPage(),
-        'nursesPage': (BuildContext context) => NursesPage(),
+        'login': (BuildContext context) =>  LoginPage(),
+        'adminPage': (BuildContext context) => AdminPage(),
+        'nursesPage': (BuildContext context) => const NursesPage(),
         'ptosPage': (BuildContext context) => const PtosPage(),
         'usersPage': (BuildContext context) => const UsersPage()
       },
