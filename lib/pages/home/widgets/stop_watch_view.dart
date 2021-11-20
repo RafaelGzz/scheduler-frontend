@@ -36,17 +36,27 @@ class _StopWatchViewState extends State<StopWatchView> {
   void _getNurseData({int? id}) {
     nurseStatus = ns.getNurseStatus(id ?? widget.nurseId);
     msse = DateTime.now();
+
+    int breakHours;
+    int workedHours;
+    try {
+      breakHours = (nurseStatus?.endBreak ?? msse)
+          .difference(nurseStatus!.initBreak!)
+          .inMilliseconds;
+    } catch (e) {
+      breakHours = 0;
+    }
+
+    try {
+      workedHours = msse.difference(nurseStatus!.initTurn!).inMilliseconds;
+    } catch (e) {
+      workedHours = 0;
+    }
     initializeTimers(
       autoStartBreakTime: nurseStatus?.breakRunning ?? false,
       autoStartTurnTime: nurseStatus?.turnRunning ?? false,
-      startBreakTime:
-          nurseStatus?.initBreak != null
-              ? msse.difference(nurseStatus!.initBreak!).inMilliseconds
-              : 0,
-      startTurnTime:
-          nurseStatus?.initTurn != null
-              ? msse.difference(nurseStatus!.initTurn!).inMilliseconds
-              : 0,
+      startBreakTime: breakHours,
+      startTurnTime: workedHours - breakHours,
     );
   }
 
@@ -130,17 +140,18 @@ class _StopWatchViewState extends State<StopWatchView> {
           _stopWatchTimerTurn.dispose();
           nurseId = state.nurseId;
 
-          _getNurseData(id: state.nurseId);
-
           if (nurseStatus != null) {
             ns.editNurseShift(
               nurseStatus!.shifts!.last.copyWith(
                 turnRunning: !isInBreakTime,
                 breakRunning: isInBreakTime,
+                // totalBreakHours: breakHours,
+                // totalWorkedHours: workedHours - breakHours,
               ),
-              state.nurseId,
+              nurseStatus!.nurseId,
             );
           }
+          _getNurseData(id: nurseId);
         }
       },
       child: BlocBuilder<HomeBloc, HomeState>(
@@ -268,7 +279,7 @@ class _StopWatchViewState extends State<StopWatchView> {
                                       } else {
                                         int breakHours = nurseStatus!.endBreak!
                                             .difference(nurseStatus!.initBreak!)
-                                            .inSeconds;
+                                            .inMilliseconds;
                                         ns.editNurseShift(
                                           nurseStatus!.shifts!.last.copyWith(
                                             initBreak: dateNow,
