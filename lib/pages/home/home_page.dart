@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:scheduler_frontend/models/nurse/nurse.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:scheduler_frontend/pages/home/bloc/home_bloc.dart';
 import 'package:scheduler_frontend/pages/home/horizontal_view.dart';
 
 class HomePage extends StatefulWidget {
@@ -10,8 +11,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  Nurse? selectedNurse;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,16 +22,19 @@ class _HomePageState extends State<HomePage> {
       ),
       body: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
-          if (constraints.maxWidth > 768) {
-            return HorizontalView(constraints: constraints);
-          } else {
-            return _verticalView(constraints);
-          }
+          return BlocProvider(
+            create: (_) => HomeBloc(),
+            child: HorizontalView(constraints: constraints),
+          );
+
+          // if (constraints.maxWidth > 768) {
+          // } else {
+          //   return _verticalView(constraints);
+          // }
         },
       ),
     );
   }
-    
 
   Widget _verticalView(BoxConstraints constraints) {
     return Column();
