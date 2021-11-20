@@ -23,7 +23,6 @@ class MyApp extends StatelessWidget {
         'login': (BuildContext context) => LoginPage(),
         'adminPage': (BuildContext context) => AdminPage(),
         'nursesPage': (BuildContext context) => const NursesPage(),
-        'ptosPage': (BuildContext context) => const PtosPage()
       },
     );
   }

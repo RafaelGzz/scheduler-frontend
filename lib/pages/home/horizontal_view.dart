@@ -7,6 +7,7 @@ import 'package:scheduler_frontend/pages/home/widgets/custom_carousel.dart';
 import 'package:scheduler_frontend/pages/home/widgets/header.dart';
 import 'package:scheduler_frontend/pages/home/widgets/pill.dart';
 import 'package:scheduler_frontend/pages/home/widgets/stop_watch_view.dart';
+import 'package:scheduler_frontend/pages/ptoS_page/ptos_page.dart';
 
 class HorizontalView extends StatefulWidget {
   const HorizontalView({Key? key, this.constraints}) : super(key: key);
@@ -122,7 +123,11 @@ class _HorizontalViewState extends State<HorizontalView> {
           Expanded(
             child: GestureDetector(
               onTap: () {
-                print("vacation");
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => PtosPage(nurse: selectedNurse!),
+                  ),
+                );
               },
               child: Container(
                 margin: const EdgeInsets.only(top: 35, right: 35),
