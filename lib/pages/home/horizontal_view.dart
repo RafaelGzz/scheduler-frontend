@@ -38,12 +38,12 @@ class _HorizontalViewState extends State<HorizontalView> {
   List<String> messages = [
     "Hospital",
     "Hospital",
-    "Cual es su profesion?",
-    "la U la U la U",
-    "Vamos Tigres",
-    "Te quiero ver",
-    "Campeoooon",
-    "Otra vez"
+    "Salud",
+    "Bienestar",
+    "Tigres",
+    "Enfermeros",
+    "Horario",
+    "Campeones"
   ];
 
   void changeCard(int index) async {
