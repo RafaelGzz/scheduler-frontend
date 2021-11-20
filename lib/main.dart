@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
       builder: (context, child) => OKToast(child: child!),
       debugShowCheckedModeBanner: false,
       title: 'Scheduler',
-      initialRoute: 'adminPage',
+      initialRoute: 'home',
       routes: {
         'home': (BuildContext context) => const HomePage(),
         'login': (BuildContext context) => LoginPage(),
