@@ -4,6 +4,9 @@ import 'package:scheduler_frontend/models/nurse/nurse.dart';
 import 'package:scheduler_frontend/models/time_frame/time_frame.dart';
 import 'package:scheduler_frontend/services/nurse_service.dart';
 
+import 'widgets/custom_input.dart';
+import 'widgets/hour_button.dart';
+
 class AddOrEditNursePage extends StatefulWidget {
   const AddOrEditNursePage({Key? key, this.nurse}) : super(key: key);
   final Nurse? nurse;
@@ -53,7 +56,7 @@ class _AddOrEditNursePageState extends State<AddOrEditNursePage> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 header(),
-                Divider(),
+                const Divider(),
                 body(context),
               ],
             ),
@@ -96,19 +99,20 @@ class _AddOrEditNursePageState extends State<AddOrEditNursePage> {
             ),
           ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 5,
         ),
-        Container(
+        SizedBox(
           height: 300,
           width: size.width,
           child: ListView.separated(
               separatorBuilder: (context, index) => const Divider(
                     height: 10,
                   ),
+              physics: const NeverScrollableScrollPhysics(),
               itemBuilder: (context, index) =>
-                  workDayTile(widget.nurse!.workDays![index]),
-              itemCount: widget.nurse!.workDays!.length),
+                  workDayTile(nurse!.workDays![index]),
+              itemCount: nurse!.workDays!.length),
         ),
       ],
     );
@@ -144,19 +148,35 @@ class _AddOrEditNursePageState extends State<AddOrEditNursePage> {
         date.day.toString() +
         " de " +
         months[date.month - 1];
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: const Color(0xff0A66BF),
+    return Column(
+      children: [
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: 5),
+          height: 50,
+          padding: const EdgeInsets.all(10),
+          decoration: const BoxDecoration(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(10), topRight: Radius.circular(10)),
+            color: Color(0xff0A66BF),
+          ),
+          child: Text(
+            fecha,
+            style: const TextStyle(color: Colors.white, fontSize: 18),
+          ),
+          alignment: Alignment.center,
         ),
-        child: Text(
-          fecha,
-          style: TextStyle(color: Colors.white),
-        ),
-        alignment: Alignment.center,
-      ),
+        ListView.builder(
+          shrinkWrap: true,
+          physics: const ClampingScrollPhysics(),
+          itemCount: workDay.workHours!.length,
+          itemBuilder: (context, index) => WorkHourTile(
+            workHour: workDay.workHours![index],
+            onAnyChanged: (WorkHour wh) {
+              workDay.workHours![index] = wh;
+            },
+          ),
+        )
+      ],
     );
   }
 
@@ -227,8 +247,8 @@ class _AddOrEditNursePageState extends State<AddOrEditNursePage> {
         ),
         Row(
           children: [
-            customInput("ID", idController, disabled: true),
-            customInput("Nombre", nameController),
+            CustomInput(label: "ID", controller: idController, disabled: true),
+            CustomInput(label: "Nombre", controller: nameController),
           ],
         ),
       ],
@@ -354,82 +374,64 @@ class _AddOrEditNursePageState extends State<AddOrEditNursePage> {
           color: Color(0xff0A66BF), fontWeight: FontWeight.w300, fontSize: 30),
     );
   }
-
-  Expanded customInput(String label, TextEditingController controller,
-      {disabled: false}) {
-    return Expanded(
-      child: Container(
-        margin: const EdgeInsets.all(5),
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10), color: Colors.grey[300]),
-        child: TextField(
-          enabled: !disabled,
-          controller: controller,
-          style: const TextStyle(fontSize: 18),
-          autocorrect: false,
-          decoration: InputDecoration(
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-            hintText: label,
-            focusedBorder: InputBorder.none,
-            border: InputBorder.none,
-          ),
-        ),
-      ),
-    );
-  }
 }
 
-class HourButton extends StatefulWidget {
-  const HourButton({Key? key, required this.time, this.onSelectTime})
+class WorkHourTile extends StatefulWidget {
+  const WorkHourTile({Key? key, required this.workHour, this.onAnyChanged})
       : super(key: key);
-  final TimeOfDay time;
-  final Function(TimeOfDay)? onSelectTime;
+  final WorkHour workHour;
+  final Function(WorkHour)? onAnyChanged;
   @override
-  _HourButtonState createState() => _HourButtonState();
+  _WorkHourTileState createState() => _WorkHourTileState();
 }
 
-class _HourButtonState extends State<HourButton> {
-  late TimeOfDay time;
-  NurseService ns = NurseService();
+class _WorkHourTileState extends State<WorkHourTile> {
+  TextEditingController breakTime = TextEditingController();
+  TextEditingController workHours = TextEditingController();
+  late WorkHour workHour;
   @override
   void initState() {
-    time = widget.time;
+    workHour = widget.workHour;
+    breakTime.text = workHour.breakTime?.toString() ?? "";
+    workHours.text = workHour.workedHours?.toString() ?? "";
+
+    breakTime.addListener(() {
+      workHour.breakTime =
+          int.parse(breakTime.text != "" ? breakTime.text : "0");
+      widget.onAnyChanged?.call(workHour);
+    });
+    workHours.addListener(() {
+      workHour.workedHours =
+          int.parse(workHours.text != "" ? workHours.text : "0");
+      widget.onAnyChanged?.call(workHour);
+    });
+
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 5),
-        child: MaterialButton(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          onPressed: () => _selectTime(context),
-          child: Text(
-            time.format(context),
-            style: const TextStyle(
-                color: Colors.white, fontWeight: FontWeight.w400, fontSize: 18),
-          ),
-          color: const Color(0xff0A66BF),
-          height: 50,
+    return Row(
+      children: [
+        HourButton(
+          time: workHour.start,
+          borderRadius: 0,
+          onSelectTime: (TimeOfDay time) {
+            workHour.start = time;
+            widget.onAnyChanged?.call(workHour);
+          },
         ),
-      ),
+        HourButton(
+          time: workHour.end,
+          borderRadius: 0,
+          onSelectTime: (TimeOfDay time) {
+            workHour.end = time;
+            widget.onAnyChanged?.call(workHour);
+          },
+        ),
+        CustomInput(label: "Minutos de descanso", controller: breakTime),
+        CustomInput(label: "Horas trabajadas", controller: workHours)
+      ],
     );
-  }
-
-  _selectTime(BuildContext context) async {
-    final TimeOfDay? timeOfDay = await showTimePicker(
-      context: context,
-      initialTime: time,
-      initialEntryMode: TimePickerEntryMode.dial,
-    );
-    if (timeOfDay != null && timeOfDay != time) {
-      setState(() {
-        time = timeOfDay;
-        widget.onSelectTime?.call(time);
-      });
-    }
   }
 }
