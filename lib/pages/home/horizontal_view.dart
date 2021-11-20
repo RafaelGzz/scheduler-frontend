@@ -120,25 +120,30 @@ class _HorizontalViewState extends State<HorizontalView> {
       child: Column(
         children: [
           Expanded(
-            child: Container(
-              margin: const EdgeInsets.only(top: 35, right: 35),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    blurRadius: 80,
-                    spreadRadius: 1,
-                    color: Colors.black.withOpacity(.1),
-                  )
-                ],
-              ),
-              child: Center(
-                child: Text(
-                  "Vacaciones Disponibles: ${selectedNurse?.daysOffAvailable ?? "0"}",
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 30,
+            child: GestureDetector(
+              onTap: () {
+                print("vacation");
+              },
+              child: Container(
+                margin: const EdgeInsets.only(top: 35, right: 35),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      blurRadius: 80,
+                      spreadRadius: 1,
+                      color: Colors.black.withOpacity(.1),
+                    )
+                  ],
+                ),
+                child: Center(
+                  child: Text(
+                    "Vacaciones Disponibles: ${selectedNurse?.daysOffAvailable ?? "0"}",
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 30,
+                    ),
                   ),
                 ),
               ),
@@ -174,7 +179,7 @@ class _HorizontalViewState extends State<HorizontalView> {
                     ),
                   ),
                 ),
-                InkWell(
+                GestureDetector(
                   onTap: () {
                     setState(() {
                       selectedNurse = null;
