@@ -5,6 +5,7 @@ part 'pto.g.dart';
 class Pto {
   @JsonKey(name: "_id")
   String? id;
+  @JsonKey(name: "nurse_id")
   int? nurseId;
   DateTime? date;
   String? status;
@@ -13,6 +14,5 @@ class Pto {
 
   Map<String, dynamic> toJson() => _$PtoToJson(this);
 
-  factory Pto.fromJson(Map<String, dynamic> json) =>
-      _$PtoFromJson(json);
+  factory Pto.fromJson(Map<String, dynamic> json) => _$PtoFromJson(json);
 }

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:scheduler_frontend/models/nurse/nurse.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:scheduler_frontend/models/nurse_response.dart';
 import 'package:scheduler_frontend/models/nurse_status/nurse_status.dart';
 import 'package:scheduler_frontend/models/nurses_response.dart';
 
@@ -112,6 +113,16 @@ class NurseService {
     }
 
     return await editNurse(nurse);
+  }
+
+  Future<Nurse?> getNurseById(String id) async {
+    final url =
+        Uri.parse("https://schedulerr2-backend.herokuapp.com/api/nurse/" + id);
+
+    final resp =
+        await http.get(url, headers: {'Content-Type': 'application/json'});
+
+    return nurseResponseFromJson(resp.body).nurse;
   }
 
   Future<bool> editNurse(Nurse nurse) async {
