@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:scheduler_frontend/models/nurse/nurse.dart';
 
 import 'package:http/http.dart' as http;
@@ -65,6 +66,7 @@ class NurseService {
     }
   }
 
+  late List<Nurse> _allNurses;
   Future<List<Nurse>> getAllNurses() async {
     final url =
         Uri.parse("https://schedulerr2-backend.herokuapp.com/api/nurse/");
@@ -72,8 +74,44 @@ class NurseService {
         await http.get(url, headers: {'Content-Type': 'application/json'});
 
     final nurses = nursesResponseFromJson(resp.body);
+    _allNurses = nurses.data ?? List.empty();
 
-    return nurses.data ?? List.empty();
+    return _allNurses;
+  }
+
+  Future<bool> updateNurseStatus(int nurseId) async {
+    Nurse nurse = _allNurses.firstWhere((nu) => nu.nurseId == nurseId);
+    final nurseStatus = _nursesStatus
+        .where((nurseStatus) => nurseStatus?.nurseId == nurse.nurseId)
+        .toList();
+
+    if (nurseStatus.isNotEmpty) {
+      nurse.workDays = nurseStatus.map<WorkDay>(
+        (nurseStatus) {
+          return WorkDay(
+            date: DateTime.now().toString(),
+            workHours: nurseStatus?.shifts
+                ?.map<WorkHour>(
+                  (shift) => WorkHour(
+                    breakTime: ((shift.totalBreakHours / 1000) / 60).floor(),
+                    workedHours: ((shift.totalWorkedHours / 1000) / 60).floor(),
+                    start: TimeOfDay.fromDateTime(
+                      shift.initTurn!,
+                    ),
+                    end: shift.endTurn != null
+                        ? TimeOfDay.fromDateTime(
+                            shift.endTurn!,
+                          )
+                        : null,
+                  ),
+                )
+                .toList(),
+          );
+        },
+      ).toList();
+    }
+
+    return await editNurse(nurse);
   }
 
   Future<bool> editNurse(Nurse nurse) async {
