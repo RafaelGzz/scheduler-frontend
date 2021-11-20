@@ -13,11 +13,11 @@ class HourButton extends StatefulWidget {
 }
 
 class _HourButtonState extends State<HourButton> {
-  late TimeOfDay time;
+  late TimeOfDay? time;
   NurseService ns = NurseService();
   @override
   void initState() {
-    time = widget.time!;
+    time = widget.time;
     super.initState();
   }
 
@@ -30,9 +30,9 @@ class _HourButtonState extends State<HourButton> {
           padding: const EdgeInsets.symmetric(vertical: 15),
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(widget.borderRadius)),
-          onPressed: () => widget.time != null ? _selectTime(context) : null,
+          onPressed: () => time != null ? _selectTime(context) : null,
           child: Text(
-            time.format(context),
+            time != null ? time!.format(context) : "Not finished",
             style: const TextStyle(
                 color: Colors.white, fontWeight: FontWeight.w400, fontSize: 18),
           ),
@@ -46,13 +46,13 @@ class _HourButtonState extends State<HourButton> {
   _selectTime(BuildContext context) async {
     final TimeOfDay? timeOfDay = await showTimePicker(
       context: context,
-      initialTime: time,
+      initialTime: time!,
       initialEntryMode: TimePickerEntryMode.dial,
     );
     if (timeOfDay != null && timeOfDay != time) {
       setState(() {
         time = timeOfDay;
-        widget.onSelectTime?.call(time);
+        widget.onSelectTime?.call(time!);
       });
     }
   }

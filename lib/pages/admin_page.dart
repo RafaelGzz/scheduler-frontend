@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:scheduler_frontend/pages/admin_pto_page.dart';
 import 'package:scheduler_frontend/pages/nurses_page/nurses_page.dart';
 import 'package:scheduler_frontend/pages/ptos_page.dart';
-import 'package:scheduler_frontend/pages/users_page.dart';
 
 class AdminPage extends StatefulWidget {
   AdminPage({Key? key}) : super(key: key);
@@ -71,11 +71,6 @@ class _AdminPageState extends State<AdminPage> {
                 selectedIcon: Icon(Icons.timelapse),
                 label: Text("Peticiones"),
               ),
-              NavigationRailDestination(
-                icon: Icon(Icons.person_outline),
-                selectedIcon: Icon(Icons.person),
-                label: Text("Administradores"),
-              ),
             ],
           ),
         ),
@@ -86,12 +81,9 @@ class _AdminPageState extends State<AdminPage> {
   Expanded pageView(PageController controller) {
     return Expanded(
       child: PageView(
+        physics: NeverScrollableScrollPhysics(),
         controller: controller,
-        children: const [
-          NursesPage(),
-          PtosPage(),
-          UsersPage(),
-        ],
+        children: const [NursesPage(), AdminPtoPage()],
       ),
     );
   }

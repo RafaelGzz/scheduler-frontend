@@ -109,7 +109,6 @@ class _AddOrEditNursePageState extends State<AddOrEditNursePage> {
               separatorBuilder: (context, index) => const Divider(
                     height: 10,
                   ),
-              physics: const NeverScrollableScrollPhysics(),
               itemBuilder: (context, index) =>
                   workDayTile(nurse!.workDays![index]),
               itemCount: nurse!.workDays!.length),
@@ -430,7 +429,7 @@ class _WorkHourTileState extends State<WorkHourTile> {
           },
         ),
         CustomInput(label: "Minutos de descanso", controller: breakTime),
-        CustomInput(label: "Horas trabajadas", controller: workHours)
+        CustomInput(label: "Minutos de trabajo", controller: workHours)
       ],
     );
   }
