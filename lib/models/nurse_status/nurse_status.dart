@@ -56,8 +56,8 @@ class NurseStatus {
     this.shifts,
   });
 
-  get turnRunning => shifts?.last.turnRunning ?? false;
-  get breakRunning => shifts?.last.breakRunning ?? false;
+  bool get turnRunning => shifts?.last.turnRunning ?? false;
+  bool get breakRunning => shifts?.last.breakRunning ?? false;
 
   DateTime? get initTurn => shifts?.last.initTurn;
   DateTime? get endTurn => shifts?.last.endTurn;
