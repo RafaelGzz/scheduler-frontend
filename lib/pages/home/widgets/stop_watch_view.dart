@@ -27,18 +27,15 @@ class _StopWatchViewState extends State<StopWatchView> {
   String? turnTime = "";
   String? breakTime = "";
 
-  late DateTime msse;
-
   late StopWatchTimer _stopWatchTimerTurn; // Create instance.
   late StopWatchTimer _stopWatchTimerBreak; // Create instance.
   NurseService ns = NurseService();
 
-  void _getNurseData({int? id}) {
-    nurseStatus = ns.getNurseStatus(id ?? widget.nurseId);
-    msse = DateTime.now();
-
+  List<int> get breakAndWorkedHours {
     int breakHours;
     int workedHours;
+    DateTime msse = DateTime.now();
+
     try {
       breakHours = (nurseStatus?.endBreak ?? msse)
           .difference(nurseStatus!.initBreak!)
@@ -52,6 +49,17 @@ class _StopWatchViewState extends State<StopWatchView> {
     } catch (e) {
       workedHours = 0;
     }
+
+    return [breakHours, workedHours];
+  }
+
+  void _getNurseData({int? id}) {
+    nurseStatus = ns.getNurseStatus(id ?? widget.nurseId);
+
+    final infoHours = breakAndWorkedHours;
+    int breakHours = infoHours[0];
+    int workedHours = infoHours[1];
+
     initializeTimers(
       autoStartBreakTime: nurseStatus?.breakRunning ?? false,
       autoStartTurnTime: nurseStatus?.turnRunning ?? false,
@@ -178,7 +186,7 @@ class _StopWatchViewState extends State<StopWatchView> {
                     ? LoadingButton(
                         label: "Iniciar Turno",
                         disabledColor: Colors.blue[300],
-                        onComplete: () {
+                        onComplete: () async {
                           setState(() {
                             isCurrentCheckedIn = true;
                           });
@@ -201,6 +209,7 @@ class _StopWatchViewState extends State<StopWatchView> {
                               nurseStatus!.nurseId,
                             );
                           }
+                          await ns.updateNurseStatus(nurseId);
                         },
                       )
                     : Row(
@@ -214,7 +223,7 @@ class _StopWatchViewState extends State<StopWatchView> {
                                 label: "Terminar Turno",
                                 activeColor: Colors.red[900],
                                 disabledColor: Colors.red[300],
-                                onComplete: () {
+                                onComplete: () async {
                                   setState(() {
                                     isCurrentCheckedIn = false;
                                     isInBreakTime = false;
@@ -227,11 +236,20 @@ class _StopWatchViewState extends State<StopWatchView> {
                                   if (nurseStatus != null) {
                                     DateTime endDate = DateTime.now();
 
+                                    final infoHours = breakAndWorkedHours;
+                                    int breakHours = infoHours[0];
+                                    int workedHours = infoHours[1];
+
                                     ns.editNurseShift(
-                                      nurseStatus!.shifts!.last
-                                          .copyWith(endTurn: endDate),
+                                      nurseStatus!.shifts!.last.copyWith(
+                                        endTurn: endDate,
+                                        totalBreakHours: breakHours,
+                                        totalWorkedHours:
+                                            workedHours - breakHours,
+                                      ),
                                       nurseId,
                                     );
+                                    await ns.updateNurseStatus(nurseId);
                                   } else {
                                     print("no joto");
                                   }
