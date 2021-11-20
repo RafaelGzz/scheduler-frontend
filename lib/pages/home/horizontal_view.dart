@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:scheduler_frontend/models/nurse/nurse.dart';
+import 'package:scheduler_frontend/pages/home/bloc/home_bloc.dart';
 import 'package:scheduler_frontend/pages/home/widgets/custom_carousel.dart';
 import 'package:scheduler_frontend/pages/home/widgets/header.dart';
-import 'package:scheduler_frontend/pages/home/widgets/loading_button.dart';
 import 'package:scheduler_frontend/pages/home/widgets/pill.dart';
-import 'package:stop_watch_timer/stop_watch_timer.dart';
+import 'package:scheduler_frontend/pages/home/widgets/stop_watch_view.dart';
 
 class HorizontalView extends StatefulWidget {
   const HorizontalView({Key? key, this.constraints}) : super(key: key);
@@ -18,41 +19,14 @@ class HorizontalView extends StatefulWidget {
 class _HorizontalViewState extends State<HorizontalView> {
   int currentIndex = 0;
   double pillPosition = 100;
-  bool isCurrentCheckedIn = false;
-  bool isInBreakTime = false;
   BoxConstraints? constraints;
   Nurse? selectedNurse;
 
-  String? turnTime = "";
-  String? breakTime = "";
-
-  late StopWatchTimer _stopWatchTimerTurn; // Create instance.
-  late StopWatchTimer _stopWatchTimerBreak; // Create instance.
-
-  @override
-  void dispose() async {
-    super.dispose();
-    await _stopWatchTimerTurn.dispose(); // Need to call dispose function.
-    await _stopWatchTimerBreak.dispose(); // Need to call dispose function.
-  }
+  HomeBloc get _bloc => context.read<HomeBloc>();
 
   @override
   void initState() {
     constraints = widget.constraints;
-    _stopWatchTimerBreak = StopWatchTimer(
-      onChange: (value) {
-        setState(() {
-          breakTime = StopWatchTimer.getDisplayTime(value, milliSecond: false);
-        });
-      },
-    );
-    _stopWatchTimerTurn = StopWatchTimer(
-      onChange: (value) {
-        setState(() {
-          turnTime = StopWatchTimer.getDisplayTime(value, milliSecond: false);
-        });
-      },
-    );
     super.initState();
   }
 
@@ -62,8 +36,8 @@ class _HorizontalViewState extends State<HorizontalView> {
   // // double headerViewHeigth = partitionedHeigth < 200 ? 200 : partitionedHeigth;
 
   List<String> messages = [
-    "Hinchada de",
-    "Tigres",
+    "Hospital",
+    "Hospital",
     "Cual es su profesion?",
     "la U la U la U",
     "Vamos Tigres",
@@ -96,93 +70,8 @@ class _HorizontalViewState extends State<HorizontalView> {
               padding: const EdgeInsets.all(50),
               child: Column(
                 children: [
-                  Expanded(
-                    flex: 3,
-                    child: Container(
-                      margin: const EdgeInsets.only(top: 220),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            blurRadius: 80,
-                            spreadRadius: 1,
-                            color: Colors.black.withOpacity(.1),
-                          )
-                        ],
-                      ),
-                      child: AnimatedSwitcher(
-                        // transitionBuilder: (child, animation) => SizeTransition(
-                        //   sizeFactor: animation,
-                        //   child: child,
-                        // ),
-                        duration: const Duration(milliseconds: 200),
-                        child: !isCurrentCheckedIn
-                            ? LoadingButton(
-                                label: "Iniciar Turno",
-                                disabledColor: Colors.blue[300],
-                                onComplete: () {
-                                  setState(() {
-                                    isCurrentCheckedIn = true;
-                                    _stopWatchTimerTurn.onExecute
-                                        .add(StopWatchExecute.start);
-                                  });
-                                },
-                              )
-                            : Row(
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      LoadingButton(
-                                        label: "Terminar Turno",
-                                        activeColor: Colors.red[900],
-                                        disabledColor: Colors.red[300],
-                                        onComplete: () {
-                                          setState(() {
-                                            isCurrentCheckedIn = false;
-                                          });
-                                        },
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.only(top: 15),
-                                        child: Text(turnTime!,
-                                            style:
-                                                const TextStyle(fontSize: 27)),
-                                      ),
-                                    ],
-                                  ),
-                                  Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      LoadingButton(
-                                        label: "Iniciar Descanso",
-                                        activeColor: Colors.purple[900],
-                                        disabledColor: Colors.purple[300],
-                                        onComplete: () {
-                                          setState(() {
-                                            _stopWatchTimerBreak.onExecute
-                                                .add(StopWatchExecute.start);
-                                            _stopWatchTimerTurn.onExecute
-                                                .add(StopWatchExecute.stop);
-                                          });
-                                        },
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.only(top: 15),
-                                        child: Text(breakTime!,
-                                            style:
-                                                const TextStyle(fontSize: 27)),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                      ),
-                    ),
+                  StopWatchView(
+                    nurseId: selectedNurse!.nurseId!,
                   ),
                   Expanded(
                     flex: 1,
@@ -202,6 +91,15 @@ class _HorizontalViewState extends State<HorizontalView> {
                                 )
                               ],
                             ),
+                            child: Center(
+                              child: Text(
+                                selectedNurse!.name!,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 40,
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                         Expanded(
@@ -217,6 +115,15 @@ class _HorizontalViewState extends State<HorizontalView> {
                                   color: Colors.black.withOpacity(.1),
                                 )
                               ],
+                            ),
+                            child: const Center(
+                              child: Text(
+                                "10am - 5pm",
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 40,
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -237,8 +144,11 @@ class _HorizontalViewState extends State<HorizontalView> {
           Header(
             width: headerViewWidth,
             onNurseSelected: (Nurse nurse) {
+              _bloc.add(NurseChange(nurseId: nurse.nurseId!));
               setState(() {
-                selectedNurse = nurse;
+                if (selectedNurse != nurse) {
+                  selectedNurse = nurse;
+                }
               });
             },
           )
