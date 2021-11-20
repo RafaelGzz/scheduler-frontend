@@ -13,13 +13,12 @@ class PtosPage extends StatefulWidget {
 
 class _PtosPageState extends State<PtosPage> {
   DateTime? date;
-  late List<Pto>? ptos;
+  late List<Pto>? ptos = [];
 
   PtoService pts = PtoService();
 
   Future getPtos() async {
-    ptos = await pts.getPtosByNurse(widget.nurse.nurseId!);
-    print(ptos);
+    ptos = await pts.getAllPtosByNurse(widget.nurse.nurseId!);
   }
 
   @override
@@ -109,7 +108,7 @@ class _PtosPageState extends State<PtosPage> {
                           Padding(
                             padding: const EdgeInsets.only(top: 20),
                             child: Text(
-                              widget.nurse.daysOffAvailable.toString(),
+                              (widget.nurse.daysOffAvailable ?? 0).toString(),
                               style: const TextStyle(
                                   fontSize: 50, fontWeight: FontWeight.bold),
                             ),
@@ -134,132 +133,175 @@ class _PtosPageState extends State<PtosPage> {
                   ),
                 ],
               ),
-              Expanded(
-                child: Container(
-                  margin: const EdgeInsets.only(top: 35, bottom: 35),
-                  height: 300,
-                  width: 800,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        blurRadius: 80,
-                        spreadRadius: 1,
-                        color: Colors.black.withOpacity(.1),
-                      )
-                    ],
-                  ),
-                  child: Column(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.only(top: 50),
-                        child: const Text(
-                          "Solicitud de Vacaciones",
-                          style: TextStyle(fontSize: 40),
+              Container(
+                margin: const EdgeInsets.only(top: 35, bottom: 35),
+                height: 300,
+                width: 800,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      blurRadius: 80,
+                      spreadRadius: 1,
+                      color: Colors.black.withOpacity(.1),
+                    )
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.only(top: 50),
+                      child: const Text(
+                        "Solicitud de Vacaciones",
+                        style: TextStyle(fontSize: 40),
+                      ),
+                    ),
+                    Expanded(
+                      child: SizedBox(
+                        height: double.infinity,
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: SizedBox(
+                                height: 120,
+                                child: IconButton(
+                                  icon: const Icon(
+                                    Icons.calendar_today,
+                                    size: 100,
+                                  ),
+                                  onPressed: () async {
+                                    date = await showDatePicker(
+                                      context: context,
+                                      initialDate: DateTime.now(),
+                                      firstDate: DateTime.now(),
+                                      lastDate: DateTime.now().add(
+                                        const Duration(days: 365),
+                                      ),
+                                    );
+                                    setState(() {});
+                                  },
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: Center(
+                                child: Text(
+                                  date != null
+                                      ? date!
+                                          .toLocal()
+                                          .toString()
+                                          .substring(0, 10)
+                                      : "Seleccione un dia para solicitarlo",
+                                  style: TextStyle(
+                                      fontSize: date != null ? 40 : 25),
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: Center(
+                                child: MaterialButton(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 15),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10)),
+                                  onPressed: date != null
+                                      ? () async {
+                                          bool res = await pts.addPto(
+                                            Pto(
+                                              date: date,
+                                              nurseId: widget.nurse.nurseId,
+                                            ),
+                                          );
+                                          final message = res
+                                              ? "Exito"
+                                              : "Solicitud faillida";
+                                          await doProcess(message);
+                                        }
+                                      : () {},
+                                  color: date != null
+                                      ? Color(0xff0A66BF)
+                                      : Colors.grey,
+                                  child: const Padding(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 25.0, vertical: 10),
+                                    child: Text(
+                                      "Solicitar",
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 40),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      Expanded(
-                        child: SizedBox(
-                          height: double.infinity,
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: SizedBox(
-                                  height: 120,
-                                  child: IconButton(
-                                    icon: const Icon(
-                                      Icons.calendar_today,
-                                      size: 100,
-                                    ),
-                                    onPressed: () async {
-                                      date = await showDatePicker(
-                                        context: context,
-                                        initialDate: DateTime.now(),
-                                        firstDate: DateTime.now(),
-                                        lastDate: DateTime.now().add(
-                                          const Duration(days: 365),
-                                        ),
-                                      );
-                                      setState(() {});
-                                    },
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: Center(
-                                  child: Text(
-                                    date != null
-                                        ? date!
-                                            .toLocal()
-                                            .toString()
-                                            .substring(0, 10)
-                                        : "Seleccione un dia para solicitarlo",
-                                    style: TextStyle(
-                                        fontSize: date != null ? 40 : 25),
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: Center(
-                                  child: MaterialButton(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 15),
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10)),
-                                    onPressed: () async {},
-                                    color: const Color(0xff0A66BF),
-                                    child: const Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 25.0, vertical: 10),
-                                      child: Text(
-                                        "Solicitar",
-                                        style: TextStyle(
-                                            color: Colors.white, fontSize: 40),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
+                    )
+                  ],
                 ),
               ),
-              Expanded(
-                flex: 2,
-                child: Container(
-                  margin: const EdgeInsets.only(top: 35, bottom: 70),
-                  height: 300,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        blurRadius: 80,
-                        spreadRadius: 1,
-                        color: Colors.black.withOpacity(.1),
-                      )
-                    ],
-                  ),
-                  child: ptos?.isNotEmpty == true
-                      ? ListView.builder(
-                          itemBuilder: (_, index) => Text(
-                              "${ptos?[index].date!.toLocal().toString().substring(0, 10)} | Estatus: ${ptos?[index].status}"),
-                          itemCount: ptos?.length,
-                        )
-                      : Center(
-                          child: Text("No hay solicitudes previas"),
-                        ),
-                ),
-              ),
+              // Expanded(
+              //   flex: 2,
+              //   child: Container(
+              //     margin: const EdgeInsets.only(top: 35, bottom: 70),
+              //     height: 300,
+              //     width: double.infinity,
+              //     decoration: BoxDecoration(
+              //       color: Colors.white,
+              //       borderRadius: BorderRadius.circular(20),
+              //       boxShadow: [
+              //         BoxShadow(
+              //           blurRadius: 80,
+              //           spreadRadius: 1,
+              //           color: Colors.black.withOpacity(.1),
+              //         )
+              //       ],
+              //     ),
+              //     child: ptos?.isNotEmpty == true
+              //         ? ListView.builder(
+              //             itemBuilder: (_, index) => Text(
+              //                 "${ptos?[index].date!.toLocal().toString().substring(0, 10)} | Estatus: ${ptos?[index].status}"),
+              //             itemCount: ptos?.length,
+              //           )
+              //         : Center(
+              //             child: Text("No hay solicitudes previas"),
+              //           ),
+              //   ),
+              // ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Future doProcess(message) async {
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        actions: [
+          Center(
+            child: MaterialButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text("Aceptar"),
+              color: Colors.green,
+            ),
+          )
+        ],
+        content: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Text(
+                message,
+                textAlign: TextAlign.center,
+                style:
+                    const TextStyle(fontSize: 20, fontWeight: FontWeight.w400),
+              ),
+            ),
+          ],
         ),
       ),
     );

@@ -28,6 +28,25 @@ class PtoService {
     return _allptos;
   }
 
+  Future<List<Pto>> getAllPtosByNurse(int nurseId) async {
+    final url = Uri.parse(
+        "https://schedulerr2-backend.herokuapp.com/api/pto/all-by-nurse");
+    final resp = await http.post(url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({"nurse_id": nurseId}));
+
+    if (resp.statusCode != 500) {
+      PtosResponse ptos;
+      try {
+        ptos = ptosResponseFromJson(resp.body);
+        return ptos.data!;
+      } catch (e) {
+        return List.empty();
+      }
+    } else
+      return List.empty();
+  }
+
   Future<bool> editPto(Pto pto) async {
     final aS = AdminService();
     final url = Uri.parse(
@@ -37,6 +56,22 @@ class PtoService {
     final resp = await http.put(url,
         headers: {'Content-Type': 'application/json', "auth-token": aS.token!},
         body: body);
+    print(resp.body);
+    if (resp.statusCode == 200)
+      return true;
+    else
+      return false;
+  }
+
+  Future<bool> addPto(Pto pto) async {
+    final url = Uri.parse(
+        "https://schedulerr2-backend.herokuapp.com/api/pto/add");
+    final body = jsonEncode(pto);
+
+    final resp = await http.post(url,
+        headers: {'Content-Type': 'application/json'},
+        body: body);
+        
     print(resp.body);
     if (resp.statusCode == 200)
       return true;

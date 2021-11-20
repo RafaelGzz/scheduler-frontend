@@ -10,7 +10,12 @@ class Pto {
   DateTime? date;
   String? status;
 
-  Pto({this.id, this.nurseId, this.date, this.status});
+  Pto({
+    this.id,
+    this.nurseId,
+    this.date,
+    this.status = "pending",
+  });
 
   Map<String, dynamic> toJson() => _$PtoToJson(this);
 

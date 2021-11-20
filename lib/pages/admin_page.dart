@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:scheduler_frontend/pages/admin_pto_page.dart';
 import 'package:scheduler_frontend/pages/nurses_page/nurses_page.dart';
-import 'package:scheduler_frontend/pages/ptos_page.dart';
 
 class AdminPage extends StatefulWidget {
   AdminPage({Key? key}) : super(key: key);

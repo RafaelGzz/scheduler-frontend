@@ -4,7 +4,6 @@ import 'package:scheduler_frontend/pages/admin_page.dart';
 import 'package:scheduler_frontend/pages/home/home_page.dart';
 import 'package:scheduler_frontend/pages/login_page.dart';
 import 'package:scheduler_frontend/pages/nurses_page/nurses_page.dart';
-import 'package:scheduler_frontend/pages/ptos_page.dart';
 
 void main() => runApp(const MyApp());
 
