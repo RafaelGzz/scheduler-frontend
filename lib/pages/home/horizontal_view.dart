@@ -66,71 +66,17 @@ class _HorizontalViewState extends State<HorizontalView> {
       child: Stack(
         children: [
           if (selectedNurse != null)
-            Padding(
-              padding: const EdgeInsets.all(50),
-              child: Column(
-                children: [
-                  StopWatchView(
-                    nurseId: selectedNurse!.nurseId!,
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            margin: const EdgeInsets.only(top: 35, right: 35),
-                            decoration: BoxDecoration(
-                              color: Colors.blue,
-                              borderRadius: BorderRadius.circular(20),
-                              boxShadow: [
-                                BoxShadow(
-                                  blurRadius: 80,
-                                  spreadRadius: 1,
-                                  color: Colors.black.withOpacity(.1),
-                                )
-                              ],
-                            ),
-                            child: Center(
-                              child: Text(
-                                selectedNurse!.name!,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 40,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Container(
-                            margin: const EdgeInsets.only(top: 35),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(20),
-                              boxShadow: [
-                                BoxShadow(
-                                  blurRadius: 80,
-                                  spreadRadius: 1,
-                                  color: Colors.black.withOpacity(.1),
-                                )
-                              ],
-                            ),
-                            child: const Center(
-                              child: Text(
-                                "10am - 5pm",
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 40,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+            SingleChildScrollView(
+              child: Container(
+                margin: const EdgeInsets.all(50),
+                child: Column(
+                  children: [
+                    StopWatchView(
+                      nurseId: selectedNurse!.nurseId!,
                     ),
-                  ),
-                ],
+                    body(context),
+                  ],
+                ),
               ),
             )
           else ...[
@@ -152,6 +98,189 @@ class _HorizontalViewState extends State<HorizontalView> {
               });
             },
           )
+        ],
+      ),
+    );
+  }
+
+  SizedBox body(BuildContext context) {
+    return SizedBox(
+      height: 400,
+      child: Row(
+        children: [
+          leftComponents(context),
+          rightComponents(context),
+        ],
+      ),
+    );
+  }
+
+  Expanded rightComponents(BuildContext context) {
+    return Expanded(
+      child: Column(
+        children: [
+          Expanded(
+            child: Container(
+              margin: const EdgeInsets.only(top: 35, right: 35),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    blurRadius: 80,
+                    spreadRadius: 1,
+                    color: Colors.black.withOpacity(.1),
+                  )
+                ],
+              ),
+              child: Center(
+                child: Text(
+                  "Vacaciones Disponibles: ${selectedNurse?.daysOffAvailable ?? "0"}",
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 30,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Container(
+            margin: const EdgeInsets.only(top: 35, right: 35),
+            height: 100,
+            child: Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    margin: const EdgeInsets.only(right: 35),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          blurRadius: 80,
+                          spreadRadius: 1,
+                          color: Colors.black.withOpacity(.1),
+                        )
+                      ],
+                    ),
+                    child: Center(
+                      child: Text(
+                        "Horas: ${selectedNurse?.weekHours.toString() ?? "0"}",
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 30,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                InkWell(
+                  onTap: () {
+                    setState(() {
+                      selectedNurse = null;
+                      _bloc.add(NurseChange(nurseId: 0));
+                    });
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          blurRadius: 80,
+                          spreadRadius: 1,
+                          color: Colors.black.withOpacity(.1),
+                        )
+                      ],
+                    ),
+                    child: const Center(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        child: Icon(
+                          Icons.exit_to_app,
+                          size: 80,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Expanded leftComponents(BuildContext context) {
+    return Expanded(
+      child: Column(
+        children: [
+          Container(
+            margin: const EdgeInsets.only(top: 35, right: 35),
+            decoration: BoxDecoration(
+              color: Colors.blue,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  blurRadius: 80,
+                  spreadRadius: 1,
+                  color: Colors.black.withOpacity(.1),
+                )
+              ],
+            ),
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.person_sharp,
+                      size: 100,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Text(
+                      selectedNurse!.name!,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 40,
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: Container(
+              margin: const EdgeInsets.only(top: 35, right: 35),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    blurRadius: 80,
+                    spreadRadius: 1,
+                    color: Colors.black.withOpacity(.1),
+                  )
+                ],
+              ),
+              child: Center(
+                child: Text(
+                  "${selectedNurse?.workSchedule?.start?.format(context) ?? ""} - ${selectedNurse?.workSchedule?.end?.format(context) ?? ""}",
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 40,
+                  ),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );

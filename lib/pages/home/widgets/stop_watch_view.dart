@@ -165,190 +165,188 @@ class _StopWatchViewState extends State<StopWatchView> {
       child: BlocBuilder<HomeBloc, HomeState>(
         buildWhen: (previous, current) => current.status is NurseChanged,
         builder: (context, state) {
-          return Expanded(
-            flex: 3,
-            child: Container(
-              margin: const EdgeInsets.only(top: 220),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    blurRadius: 80,
-                    spreadRadius: 1,
-                    color: Colors.black.withOpacity(.1),
-                  )
-                ],
-              ),
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 200),
-                child: !isCurrentCheckedIn
-                    ? LoadingButton(
-                        label: "Iniciar Turno",
-                        disabledColor: Colors.blue[300],
-                        onComplete: () async {
-                          setState(() {
-                            isCurrentCheckedIn = true;
-                          });
-                          _stopWatchTimerBreak.dispose();
-                          _stopWatchTimerTurn.dispose();
+          return Container(
+            height: 400,
+            margin: const EdgeInsets.only(top: 220),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  blurRadius: 80,
+                  spreadRadius: 1,
+                  color: Colors.black.withOpacity(.1),
+                )
+              ],
+            ),
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 200),
+              child: !isCurrentCheckedIn
+                  ? LoadingButton(
+                      label: "Iniciar Turno",
+                      disabledColor: Colors.blue[300],
+                      onComplete: () async {
+                        setState(() {
+                          isCurrentCheckedIn = true;
+                        });
+                        _stopWatchTimerBreak.dispose();
+                        _stopWatchTimerTurn.dispose();
 
-                          initializeTimers(setCheckedIn: false);
+                        initializeTimers(setCheckedIn: false);
 
-                          _stopWatchTimerTurn.onExecute
-                              .add(StopWatchExecute.start);
+                        _stopWatchTimerTurn.onExecute
+                            .add(StopWatchExecute.start);
 
-                          if (nurseStatus == null) {
-                            nurseStatus = NurseStatus(
-                              nurseId: nurseId,
-                              shifts: [Shift()],
-                            );
-                            ns.addNurseStatus = nurseStatus;
-                          } else {
-                            ns.addNurseShift(
-                              nurseStatus!.nurseId,
-                            );
-                          }
-                          await ns.updateNurseStatus(nurseId);
-                        },
-                      )
-                    : Row(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              LoadingButton(
-                                label: "Terminar Turno",
-                                activeColor: Colors.red[900],
-                                disabledColor: Colors.red[300],
-                                onComplete: () async {
+                        if (nurseStatus == null) {
+                          nurseStatus = NurseStatus(
+                            nurseId: nurseId,
+                            shifts: [Shift()],
+                          );
+                          ns.addNurseStatus = nurseStatus;
+                        } else {
+                          ns.addNurseShift(
+                            nurseStatus!.nurseId,
+                          );
+                        }
+                        await ns.updateNurseStatus(nurseId);
+                      },
+                    )
+                  : Row(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            LoadingButton(
+                              label: "Terminar Turno",
+                              activeColor: Colors.red[900],
+                              disabledColor: Colors.red[300],
+                              onComplete: () async {
+                                setState(() {
+                                  isCurrentCheckedIn = false;
+                                  isInBreakTime = false;
+                                  _stopWatchTimerTurn.onExecute
+                                      .add(StopWatchExecute.reset);
+                                  _stopWatchTimerBreak.onExecute
+                                      .add(StopWatchExecute.reset);
+                                });
+
+                                if (nurseStatus != null) {
+                                  DateTime endDate = DateTime.now();
+
+                                  final infoHours = breakAndWorkedHours;
+                                  int breakHours = infoHours[0];
+                                  int workedHours = infoHours[1];
+
+                                  ns.editNurseShift(
+                                    nurseStatus!.shifts!.last.copyWith(
+                                      endTurn: endDate,
+                                      totalBreakHours: breakHours,
+                                      totalWorkedHours:
+                                          workedHours - breakHours,
+                                    ),
+                                    nurseId,
+                                  );
+                                  await ns.updateNurseStatus(nurseId);
+                                } else {
+                                  print("no joto");
+                                }
+                              },
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 15),
+                              child: Text(
+                                turnTime!,
+                                style: const TextStyle(fontSize: 27),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            LoadingButton(
+                              label: isInBreakTime
+                                  ? "Detener Descanso"
+                                  : "Iniciar Descanso",
+                              activeColor: Colors.purple[900],
+                              disabledColor: Colors.purple[300],
+                              onComplete: () {
+                                if (!isInBreakTime) {
                                   setState(() {
-                                    isCurrentCheckedIn = false;
-                                    isInBreakTime = false;
-                                    _stopWatchTimerTurn.onExecute
-                                        .add(StopWatchExecute.reset);
+                                    isInBreakTime = true;
                                     _stopWatchTimerBreak.onExecute
-                                        .add(StopWatchExecute.reset);
+                                        .add(StopWatchExecute.start);
+                                    _stopWatchTimerTurn.onExecute
+                                        .add(StopWatchExecute.stop);
                                   });
-
                                   if (nurseStatus != null) {
-                                    DateTime endDate = DateTime.now();
+                                    DateTime dateNow = DateTime.now();
 
-                                    final infoHours = breakAndWorkedHours;
-                                    int breakHours = infoHours[0];
-                                    int workedHours = infoHours[1];
-
-                                    ns.editNurseShift(
-                                      nurseStatus!.shifts!.last.copyWith(
-                                        endTurn: endDate,
-                                        totalBreakHours: breakHours,
-                                        totalWorkedHours:
-                                            workedHours - breakHours,
-                                      ),
-                                      nurseId,
-                                    );
-                                    await ns.updateNurseStatus(nurseId);
+                                    if (nurseStatus?.endBreak == null) {
+                                      ns.editNurseShift(
+                                        nurseStatus!.shifts!.last.copyWith(
+                                          initBreak: dateNow,
+                                          turnRunning: !isInBreakTime,
+                                          breakRunning: isInBreakTime,
+                                        ),
+                                        nurseId,
+                                      );
+                                    } else {
+                                      int breakHours = nurseStatus!.endBreak!
+                                          .difference(nurseStatus!.initBreak!)
+                                          .inMilliseconds;
+                                      ns.editNurseShift(
+                                        nurseStatus!.shifts!.last.copyWith(
+                                          initBreak: dateNow,
+                                          forceEndBreakNull: true,
+                                          totalBreakHours: breakHours,
+                                          turnRunning: !isInBreakTime,
+                                          breakRunning: isInBreakTime,
+                                        ),
+                                        nurseId,
+                                      );
+                                    }
                                   } else {
                                     print("no joto");
                                   }
-                                },
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 15),
-                                child: Text(
-                                  turnTime!,
-                                  style: const TextStyle(fontSize: 27),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              LoadingButton(
-                                label: isInBreakTime
-                                    ? "Detener Descanso"
-                                    : "Iniciar Descanso",
-                                activeColor: Colors.purple[900],
-                                disabledColor: Colors.purple[300],
-                                onComplete: () {
-                                  if (!isInBreakTime) {
-                                    setState(() {
-                                      isInBreakTime = true;
-                                      _stopWatchTimerBreak.onExecute
-                                          .add(StopWatchExecute.start);
-                                      _stopWatchTimerTurn.onExecute
-                                          .add(StopWatchExecute.stop);
-                                    });
-                                    if (nurseStatus != null) {
-                                      DateTime dateNow = DateTime.now();
+                                } else {
+                                  setState(() {
+                                    isInBreakTime = false;
+                                    _stopWatchTimerBreak.onExecute
+                                        .add(StopWatchExecute.stop);
+                                    _stopWatchTimerTurn.onExecute
+                                        .add(StopWatchExecute.start);
+                                  });
+                                  if (nurseStatus != null) {
+                                    DateTime nowMsse = DateTime.now();
 
-                                      if (nurseStatus?.endBreak == null) {
-                                        ns.editNurseShift(
-                                          nurseStatus!.shifts!.last.copyWith(
-                                            initBreak: dateNow,
-                                            turnRunning: !isInBreakTime,
-                                            breakRunning: isInBreakTime,
-                                          ),
-                                          nurseId,
-                                        );
-                                      } else {
-                                        int breakHours = nurseStatus!.endBreak!
-                                            .difference(nurseStatus!.initBreak!)
-                                            .inMilliseconds;
-                                        ns.editNurseShift(
-                                          nurseStatus!.shifts!.last.copyWith(
-                                            initBreak: dateNow,
-                                            forceEndBreakNull: true,
-                                            totalBreakHours: breakHours,
-                                            turnRunning: !isInBreakTime,
-                                            breakRunning: isInBreakTime,
-                                          ),
-                                          nurseId,
-                                        );
-                                      }
-                                    } else {
-                                      print("no joto");
+                                    if (nurseStatus?.endBreak == null) {
+                                      ns.editNurseShift(
+                                        nurseStatus!.shifts!.last.copyWith(
+                                          endBreak: nowMsse,
+                                          turnRunning: !isInBreakTime,
+                                          breakRunning: isInBreakTime,
+                                        ),
+                                        nurseId,
+                                      );
                                     }
                                   } else {
-                                    setState(() {
-                                      isInBreakTime = false;
-                                      _stopWatchTimerBreak.onExecute
-                                          .add(StopWatchExecute.stop);
-                                      _stopWatchTimerTurn.onExecute
-                                          .add(StopWatchExecute.start);
-                                    });
-                                    if (nurseStatus != null) {
-                                      DateTime nowMsse = DateTime.now();
-
-                                      if (nurseStatus?.endBreak == null) {
-                                        ns.editNurseShift(
-                                          nurseStatus!.shifts!.last.copyWith(
-                                            endBreak: nowMsse,
-                                            turnRunning: !isInBreakTime,
-                                            breakRunning: isInBreakTime,
-                                          ),
-                                          nurseId,
-                                        );
-                                      }
-                                    } else {
-                                      print("no joto");
-                                    }
+                                    print("no joto");
                                   }
-                                },
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 15),
-                                child: Text(breakTime!,
-                                    style: const TextStyle(fontSize: 27)),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-              ),
+                                }
+                              },
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 15),
+                              child: Text(breakTime!,
+                                  style: const TextStyle(fontSize: 27)),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
             ),
           );
         },
