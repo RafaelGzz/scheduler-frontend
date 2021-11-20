@@ -35,6 +35,8 @@ class NursesResponse {
         "status": status,
         "statusCode": statusCode,
         "message": message,
-        "data": List<dynamic>.from(data!.map((x) => x.toJson())),
+        "data": data == null
+            ? null
+            : List<dynamic>.from(data!.map((x) => x.toJson())),
       };
 }

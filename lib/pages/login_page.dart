@@ -29,32 +29,36 @@ class LoginPage extends StatelessWidget {
     );
   }
 
-  Material loginCard(Size size, BuildContext context) {
+  Widget loginCard(Size size, BuildContext context) {
     return Material(
       elevation: 10,
       child: Container(
         margin: const EdgeInsets.all(20),
         height: size.height / 1.8,
         width: size.width / 3.5,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            const Text(
-              "Inicia Sesión",
-              style: TextStyle(
-                  fontSize: 30,
-                  color: Color(0xff0A66BF),
-                  fontWeight: FontWeight.w300),
-            ),
-            Column(
-              children: [
-                userInput(),
-                const SizedBox(height: 20),
-                passInput(),
-              ],
-            ),
-            loginButton(context)
-          ],
+        child: Expanded(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              const FittedBox(
+                child: Text(
+                  "Inicia Sesión",
+                  style: TextStyle(
+                      fontSize: 30,
+                      color: Color(0xff0A66BF),
+                      fontWeight: FontWeight.w300),
+                ),
+              ),
+              Column(
+                children: [
+                  userInput(),
+                  const SizedBox(height: 20),
+                  passInput(),
+                ],
+              ),
+              loginButton(context)
+            ],
+          ),
         ),
       ),
     );
